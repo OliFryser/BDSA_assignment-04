@@ -1,15 +1,11 @@
-﻿using Microsoft.Data.SqlClient;
-using Microsoft.Extensions.Configuration;
-using Assignment.Infrastructure;
-using Microsoft.EntityFrameworkCore;
+﻿using Assignment.Infrastructure;
+using Assignment.Core;
 
-string _conStr = @"
-    Server=0.0.0.0:1433;
-    Database=musing-keldysh;
-    User Id=SA;
-    Password=<YourStrong@Passw0rd>;";
+var factory = new KanbanContextFactory();
+using var context = factory.CreateDbContext(args);
 
-var optionsBuilder = new DbContextOptionsBuilder<KanbanContext>();
-optionsBuilder.UseSqlServer(_conStr);
+var UserRepository = new UserRepository(context);
+UserRepository.Create(new UserCreateDTO("Bob", "Bob@jensen.dk"));
+var user = UserRepository.Find(1);
 
-var context = new KanbanContext(optionsBuilder.Options);
+Console.WriteLine(user.Name);
